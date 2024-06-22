@@ -1,12 +1,12 @@
- package com.example.notesapp
+package com.example.notesapp
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notesapp.databinding.ActivityMainBinding
 
- class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var db: NoteDatabaseHelper
@@ -18,21 +18,18 @@ import com.example.notesapp.databinding.ActivityMainBinding
         setContentView(binding.root)
 
         db = NoteDatabaseHelper(this)
-        notesAdapter = NotesAdapter(db.getAllNotes(),this)
+        notesAdapter = NotesAdapter(db.getAllNotes(), this)
 
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.notesRecyclerView.adapter = notesAdapter
 
-
-        binding.addButton.setOnClickListener{
-            val intent= Intent(this,AddNoteActivity::class.java)
-            startActivity(intent)
+        binding.addButton.setOnClickListener {
+            startActivity(Intent(this, AddNoteActivity::class.java))
         }
     }
 
-     override fun onResume() {
-         super.onResume()
-         notesAdapter.refreshData(db.getAllNotes())
-     }
-
+    override fun onResume() {
+        super.onResume()
+        notesAdapter.refreshData(db.getAllNotes())
+    }
 }

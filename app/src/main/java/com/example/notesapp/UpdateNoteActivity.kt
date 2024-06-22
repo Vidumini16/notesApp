@@ -1,46 +1,42 @@
 package com.example.notesapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.notesapp.databinding.ActivityUpdateNoteBinding
-
 
 class UpdateNoteActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUpdateNoteBinding
     private lateinit var db: NoteDatabaseHelper
-    private var noteId: Int = -1
-
+    private var noteId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUpdateNoteBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_update_note)
+        setContentView(binding.root)
 
         db = NoteDatabaseHelper(this)
+        noteId = intent.getIntExtra("note_id", 0)
 
-        noteId = intent.getIntExtra("note_id", -1)
-        if(noteId == -1){
-            finish()
-            return
+        val note = db.getNoteById(noteId)
+        note?.let {
+            binding.updateTitleEditText.setText(it.title)
+            binding.updateContentEditText.setText(it.content)
         }
-
-        val note = db.getNoteByTD(noteId)
-        binding.updateTitleEditText.setText(note.title)
-        binding.updateContentEditText.setText(note.content)
 
         binding.updateSaveButton.setOnClickListener {
-            val newTitle = binding.updateTitleEditText.text.toString()
-            val newContent = binding.updateContentEditText.text.toString()
-            val updatedNote = Note(noteId, newTitle, newContent)
-            db.updateNote(updatedNote)
-            finish()
-            Toast.makeText(this, "Changes Saved", Toast.LENGTH_SHORT).show()
+            val title = binding.updateTitleEditText.text.toString().trim()
+            val content = binding.updateContentEditText.text.toString().trim()
 
+            if (title.isNotEmpty() && content.isNotEmpty()) {
+                val updatedNote = Note(noteId, title, content)
+                db.updateNote(updatedNote)
+                Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                Toast.makeText(this, "Title and Content cannot be empty", Toast.LENGTH_SHORT).show()
+            }
         }
-
-
-
     }
 }
